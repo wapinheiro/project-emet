@@ -1,10 +1,11 @@
 # Project Emet
 
-> **The Truth that animates the machine.**
+> **So you have chosen AI...
+> Thi is the Truth that animates the machine.**
 
 ## An AI-Native Intermediate Representation
 
-Project Emet is a revolutionary approach to programming language design where **human-readable code is a legacy artifact**. Instead of treating source code as the primary representation, Emet establishes an AI-Native Intermediate Representation (AIR) as the source of truth.
+Project Emet is a new approach to programming language design where **human-readable code is a legacy artifact**. Instead of treating source code as the primary representation, Emet establishes an AI-Native Intermediate Representation (AIR) as the source of truth. AI will not write a code for humans, it will write a code for efficiency and accuracy. 
 
 ### Core Philosophy
 
