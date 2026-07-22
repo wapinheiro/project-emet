@@ -123,23 +123,22 @@ Instead of trying to prove that your code works on a few test cases, an SMT solv
 * If it proves no input can ever break your rules, it returns **UNSAT** (Unsatisfiable crash state)—meaning the code is **mathematically proven to be bug-free**.
 
 
-3. **Specialized Theories ("Modulo Theories"):** SMT solvers understand specialized domains of math, including:
-* **Arithmetic Theory:** Real numbers, integers, and range boundaries ($x + 5 > 10$).
-* **Bit-Vector Theory:** Low-level computer hardware behaviors (e.g., 32-bit integer overflow).
-* **Array/List Theory:** Operations on indexed memory collections.
+3. **Specialized Theories ("Modulo Theories"):** SMT solvers understand specialized domains of math, including Arithmetic Theory ($x + 5 > 10$), Bit-Vector Theory (hardware overflow), and Array/List Theory.
 
+#### Auditing Invariants in the Graph
 
+During this pass, the validator continuously audits the graph's **Invariants**—rules, conditions, or mathematical properties that **must remain true before, during, and after execution**:
 
-In Stage 2, the validator runs these solvers against the AIR graph to enforce:
+* **State/Type Invariants:** Rules attached to Semantic Nodes that cannot vary (e.g., $0.0 \le \text{probability} \le 1.0$).
+* **Loop Invariants:** Properties that hold true before a loop begins, across every iteration, and when the loop terminates (e.g., proving a list remains sorted throughout sorting passes).
+* **System/Class Invariants:** Global safety boundaries (e.g., `shopping_cart.total >= 0`).
 
-* **Refinement Type Verification:** Asserts that node value constraints (e.g., $0 \le x \le 120$) cannot be violated under any execution state.
-* **Loop Termination Proofs:** Checks Recurrence Nodes for valid ranking functions to mathematically guarantee termination.
-* **Proof Object Audit:** Re-verifies formal mathematical proofs attached to state transitions.
+Because AIR represents logic as a spatial multi-dimensional graph rather than flat text, the SMT solver traverses state transitions directly to answer: *"Does any path through this graph allow execution to reach a state where Invariant == False?"*
 
 ```
 [ Semantic Node: x ]  --->  [ SMT Solver (Z3) ]  --->  RESULT:
 Constraints: x > 0          Evaluates all possibilities   UNSAT (Impossible to break!)
-Target: Divide(100, x)      for x = 0                    --> CODE IS PROVEN TRUE
+Target: Divide(100, x)      for x = 0                    --> INVARIANT PRESERVED
 
 ```
 
