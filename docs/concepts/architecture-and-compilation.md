@@ -6,7 +6,7 @@
 
 In traditional software development, compilers take flat, human-written text files and translate them sequentially into machine instructions. In **Project Emet**, source code as a text file is a legacy concept.
 
-Project Emet establishes the **AI-Native Intermediate Representation (AIR)** as the primary **Source of Truth**. Program logic exists as a **multi-dimensional graph of intent**, and traditional human-readable source code (Python, Rust, C++) is merely a temporary, bi-directional **projection**.
+Project Emet establishes the **AI-Native Intermediate Representation (AIR)** as the primary **Source of Truth**. Program logic exists as a multi-dimensional graph of intent, and traditional human-readable source code (Python, Rust, C++) is merely a temporary, bi-directional **projection**.
 
 ---
 
@@ -109,11 +109,39 @@ The compiler ingests the AIR JSON/Protobuf graph and performs initial graph trav
 
 ### Stage 2: The Emet-Validator (SMT Solver Pass)
 
-Before machine instructions are generated, the graph passes through the **Emet-Validator**. Using SMT (Satisfiability Modulo Theories) solvers (such as Z3 or CVC5), the validator proves that the graph preserves computational truth:
+Before machine instructions are generated, the graph passes through the **Emet-Validator**. Using SMT (Satisfiability Modulo Theories) solvers (such as Microsoft's open-source **Z3** or **CVC5**), the validator proves that the graph preserves computational truth.
+
+#### What is an SMT Solver?
+
+An SMT solver is an automated formal verification engine. While a standard compiler acts like a spell-checker ensuring syntax grammar is correct, an SMT solver acts like a **math detective** testing whether your logic holds true under every possible execution state.
+
+Instead of trying to prove that your code works on a few test cases, an SMT solver tries to prove your code **can be broken**:
+
+1. **Satisfiability Testing:** It translates all node constraints and logic gates into mathematical equations and tests all inputs simultaneously.
+2. **SAT vs. UNSAT:**
+* If it finds an input that breaks your rules (e.g., forcing $x = 0$ in a division node), it returns **SAT** (Satisfiable crash state) and flags a "Truth Violation".
+* If it proves no input can ever break your rules, it returns **UNSAT** (Unsatisfiable crash state)—meaning the code is **mathematically proven to be bug-free**.
+
+
+3. **Specialized Theories ("Modulo Theories"):** SMT solvers understand specialized domains of math, including:
+* **Arithmetic Theory:** Real numbers, integers, and range boundaries ($x + 5 > 10$).
+* **Bit-Vector Theory:** Low-level computer hardware behaviors (e.g., 32-bit integer overflow).
+* **Array/List Theory:** Operations on indexed memory collections.
+
+
+
+In Stage 2, the validator runs these solvers against the AIR graph to enforce:
 
 * **Refinement Type Verification:** Asserts that node value constraints (e.g., $0 \le x \le 120$) cannot be violated under any execution state.
 * **Loop Termination Proofs:** Checks Recurrence Nodes for valid ranking functions to mathematically guarantee termination.
 * **Proof Object Audit:** Re-verifies formal mathematical proofs attached to state transitions.
+
+```
+[ Semantic Node: x ]  --->  [ SMT Solver (Z3) ]  --->  RESULT:
+Constraints: x > 0          Evaluates all possibilities   UNSAT (Impossible to break!)
+Target: Divide(100, x)      for x = 0                    --> CODE IS PROVEN TRUE
+
+```
 
 ### Stage 3: Lowering to LLVM IR
 
