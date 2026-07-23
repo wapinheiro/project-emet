@@ -100,12 +100,45 @@ Human-readable syntax is rendered on demand through a **Projection Lens**. If a 
 
 Unlike traditional compilers that perform lexing, parsing, and syntax-tree generation on raw text, the Emet compiler operates directly on a pre-structured semantic graph.
 
-### Stage 1: Structural & Topological Analysis
+```
+Stage 1: Structural & Topological Analysis
+  ├── Orphan Detection (No unplugged wires)
+  └── Exhaustiveness Check (100% path coverage)
+            │
+            v
+Stage 2: Emet-Validator (SMT Solver Pass)
+  ├── Satisfiability Testing (Z3 / CVC5)
+  └── Invariant Auditing (State, Loop, System)
+            │
+            v
+Stage 3: Lowering to LLVM IR
+            │
+            v
+Stage 4: Machine Code Emission & JIT Runtime
 
-The compiler ingests the AIR JSON/Protobuf graph and performs initial graph traversal:
+```
 
-* **Orphan Detection:** Ensures no isolated effect or transition nodes exist without valid input dependencies.
-* **Exhaustiveness Check:** Verifies that all conditional branching paths account for 100% of potential mathematical outcomes.
+---
+
+### Stage 1: Structural & Topological Analysis ("The Blueprint Inspection")
+
+Before sending the graph to the heavy-duty math detective (the SMT solver in Stage 2), Stage 1 performs a fast, high-level structural scan to ensure every node is plugged in correctly and no loose ends are left dangling.
+
+#### 1. Orphan Detection ("No Unplugged Wires")
+
+Ensures no isolated effect or transition nodes exist without valid input dependencies.
+
+* **The Problem:** An AI agent or developer creates an action node (e.g., `Effect: Sound Alarm`), but forgets to connect it to any sensor or logic gate.
+* **Stage 1 Check:** Traverses the graph to verify every action node has a valid data trigger and input wire. Unconnected "orphan" nodes cause compilation to halt immediately with an structural error.
+
+#### 2. Exhaustiveness Check ("No Missing Cases")
+
+Verifies that all conditional branching paths account for 100% of potential mathematical outcomes.
+
+* **The Problem:** A logic gate determines speed limits based on weather (`Clear -> 65mph`, `Rain -> 55mph`, `Snow -> 35mph`), but fails to define what happens if the sensor reads `Fog` or `Hail`.
+* **Stage 1 Check:** Calculates all possible states of input nodes to guarantee there are no unmapped "undefined" states. If a logical scenario is missing, Stage 1 stops compilation before execution can fail.
+
+---
 
 ### Stage 2: The Emet-Validator (SMT Solver Pass)
 
@@ -142,11 +175,15 @@ Target: Divide(100, x)      for x = 0                    --> INVARIANT PRESERVED
 
 ```
 
+---
+
 ### Stage 3: Lowering to LLVM IR
 
 Once the graph is proven valid by the Emet-Validator, the compiler "lowers" high-level semantic nodes and logic gates into **LLVM Intermediate Representation (LLVM IR)**.
 
 * By targeting LLVM IR, Project Emet inherits battle-tested optimizations (vectorization, dead-code elimination, memory allocation) and target support across all major architectures (x86_64, ARM, Apple Silicon, WebAssembly).
+
+---
 
 ### Stage 4: Machine Code Emission & JIT Runtime
 
