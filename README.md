@@ -32,7 +32,7 @@ In the Emet paradigm:
 ## Documentation
 
 - **[Manifesto](docs/MANIFESTO.md)**: Vision and principles behind Project Emet
-- **[Core Concepts](docs/CONCEPTS.md)**: Technical concepts and architecture
+- **[Core Concepts](docs/concepts)**: Technical concepts and architecture
 - **[RFCs](rfcs/)**: Technical proposals and specifications
 
 ## Why "Emet"?
