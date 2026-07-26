@@ -22,17 +22,101 @@ rather than taking them on faith.
 
 ## Phase 1: Foundations
 
-Skip this phase if you already have a working knowledge of type systems.
+Skip this phase if you already have a working knowledge of type systems. Both books below are
+large — you don't need to read either cover to cover. The chapter-level breakdown is given so you
+can target exactly the material that bears on Emet's design claims.
 
-- **[*Types and Programming Languages*](https://www.cis.upenn.edu/~bcpierce/tapl/) by Benjamin
-  Pierce** — the standard reference. You don't need the whole book to start; the introductory
-  chapters and the chapter on subtyping are the most relevant here.
-- **[Programming Language Foundations in Agda (PLFA)](https://plfa.github.io/)** — free, and
-  doubles as a gentle introduction to dependent types (see Phase 3), so it's a good alternative
-  or supplement to Pierce if you want something more hands-on and interactive.
+### *Types and Programming Languages* (TAPL) by Benjamin Pierce
+
+**Must-read:**
+
+- **Chapter 1 — Introduction.** Sets up why type systems exist and what safety guarantees they're
+  for. Necessary framing for everything after.
+- **Chapter 8 — Typed Arithmetic Expressions.** Introduces **Progress** ("well-typed terms aren't
+  stuck") and **Preservation** ("evaluation preserves types") — the two theorems that formal
+  "this program can't crash" claims are built on. This is the actual mathematical backbone behind
+  Emet's "mathematically proven to be bug-free" language. Short chapter, high payoff.
+- **Chapter 9 — Simply Typed Lambda-Calculus.** The minimal typed language with function types.
+  You need this vocabulary (typing rules, type judgments) to read anything else, including
+  Dafny/F* syntax later.
+- **Chapter 12 — Normalization.** The single most directly relevant chapter for the
+  Recurrence-Node/ranking-function critique. Proves that every well-typed term in the
+  simply-typed lambda calculus terminates, using Tait's method of logical relations — a formal
+  ancestor of exactly the "every loop must provably terminate" idea Emet leans on. Read this one
+  closely.
+- **Chapter 13 — References.** Introduces mutable state into a typed calculus — directly relevant
+  to Emet's `std::io`/effects gap. Seeing how state gets typed at all is a prerequisite for
+  evaluating whether "Monadic Effect Nodes" (one paragraph in the current docs) is remotely
+  sufficient.
+- **Chapter 14 — Exceptions.** Non-local control flow and typed error handling — relevant to how
+  Emet would need to handle failure paths (division-by-zero rejection, "Truth Violation" errors)
+  formally rather than just diagrammatically.
+
+**Worth reading:**
+
+- **Chapter 11 — Simple Extensions.** Covers `fix` (general recursion) and variants/sums. The
+  `fix` operator is exactly the mechanism that breaks the guarantees proven in Chapter 12 — i.e.,
+  this chapter shows you *why* unrestricted recursion and "provably terminates" are in tension,
+  which is the crux of the termination-model critique.
+- **Chapter 15 — Subtyping.** Useful background for Dafny/F*'s richer type systems, and for
+  understanding Contract/Realization separation as a form of behavioral subtyping.
+- **Chapter 20 — Recursive Types.** Needed to formally type self-referential structures like
+  graphs/trees — relevant background for reasoning rigorously about the AIR graph itself as a
+  typed data structure.
+- **Chapter 24 — Existential Types.** The formal underpinning of "abstract data types /
+  information hiding" — the closest classical analog to Emet's **Contract Node / Candidate
+  Realization** split (a contract as an existential interface, realizations as its witnesses).
+
+**Skip for now:** Chapters 2–7 (mechanical setup and de Bruijn indices — useful if you want to
+*implement* a typechecker yourself, less so for evaluating Emet's claims); Chapters 16–19
+(subtyping metatheory / OO case studies); Chapters 22–23, 25 (Hindley-Milner inference, System F);
+Chapters 26–32 (bounded/higher-order polymorphism — genuinely advanced, not load-bearing here).
+
+**If you only have time for four TAPL chapters:** 1, 8, 12, 13 — the minimum set that gets you
+Progress/Preservation, termination proving, and typed state.
+
+### Programming Language Foundations in Agda (PLFA)
+
+PLFA covers similar ground to TAPL but with machine-checked proofs in Agda, and doubles as a
+gentle, hands-on introduction to dependent types (see Phase 3). It's organized into three parts:
+Logical Foundations, Programming Language Foundations, and Denotational Semantics.
+
+**Must-read:**
+
+- **Induction** (Part 1). Proof by induction, done properly and interactively. This is the
+  foundation the ranking-function/ termination proofs in Recurrence Nodes ultimately rest on —
+  seeing induction proved by hand in Agda makes "prove this loop terminates" concrete rather than
+  hand-wavy.
+- **Relations** (Part 1). Inductively-defined relations — directly relevant, since this is the
+  formal machinery you'd use to define something like a Recurrence Node's step relation
+  precisely.
+- **Properties** (Part 2). Agda's own treatment of Progress and Preservation — a machine-checked
+  counterpart to TAPL Chapter 8. Reading both versions back to back is genuinely clarifying.
+- **Untyped: Untyped lambda calculus with full normalisation** (Part 2). Despite the name, this
+  chapter is about proving normalization (termination) using strong computability/logical
+  relations, in the same spirit as TAPL Chapter 12, but with the full machine-checked proof
+  visible. This is the most direct, hands-on parallel to the termination-proving question at the
+  heart of the Recurrence Node critique.
+
+**Worth reading:**
+
+- **Decidable** (Part 1). Booleans and decision procedures — a gentle, concrete introduction to
+  what "decidable" means formally, which is directly relevant to why SMT solvers can return
+  `unknown` on undecidable fragments.
+- **Quantifiers** (Part 1). Universals and existentials — parallels TAPL Chapter 24 and is useful
+  background for the Contract/Realization split.
+- **Lambda** (Part 2). Introduction to the lambda calculus — largely redundant with TAPL Chapter 5
+  if you've already read that, but useful as a refresher in Agda's notation.
+
+**Skip for now:** Naturals, Equality, Isomorphism, Connectives, Negation, Lists (general logical/
+Agda foundations, useful if you want fluency in Agda itself but not load-bearing for evaluating
+Emet); DeBruijn, More, Bisimulation, Inference, Confluence, BigStep (implementation-level Part 2
+material); all of Part 3, Denotational Semantics (advanced, not load-bearing for this critique).
 
 **Relevance to Emet:** Emet's "refinement types," "invariants," and "constraints" are standard
-type-system vocabulary under different names. This phase makes the rest of the material legible.
+type-system vocabulary under different names. This phase makes the rest of the material legible,
+and the Normalization/Untyped chapters specifically are the clearest formal treatment of the
+termination question that recurs throughout the critique.
 
 ---
 
