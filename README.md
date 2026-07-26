@@ -34,6 +34,7 @@ In the Emet paradigm:
 - **[Manifesto](docs/MANIFESTO.md)**: Vision and principles behind Project Emet
 - **[Core Concepts](docs/concepts)**: Technical concepts and architecture
 - **[RFCs](rfcs/)**: Technical proposals and specifications
+- **[Prerequisites](docs/PREREQUISITE.md)**: I really recommend to become familiar with some foundational concepts, this will help you really understand the project and some of the critiques at a technical level.
 
 ## Why "Emet"?
 
