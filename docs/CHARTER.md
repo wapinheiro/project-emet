@@ -58,6 +58,18 @@ moving target.
 
 *(To be finalized: the specific baseline tool/configuration — see Open Questions.)*
 
+**Controlled variable — requirements/prompt quality.** Requirements-based programming (writing
+clear, complete, unambiguous task specifications) genuinely reduces token usage, but it does so by
+improving the human's input, not by changing the system's architecture. It is a discipline applied
+by whoever writes the task prompt, not a mechanism the project builds or ships — and so it is not
+a candidate lever under Section 4. However, it is a real confound: if prompt/requirement quality
+differs across conditions in an experiment, measured differences will reflect prompt quality
+rather than the mechanism under test. **The same requirements/prompt text must be used, unchanged,
+across every condition for a given task**, so that requirements quality is held constant and does
+not leak into the primary metric. (Note: if requirements are ever formalized into structured,
+machine-checkable contracts, that becomes an instance of Lever 3 — "contracts as compressed
+context" — not a separate lever.)
+
 ---
 
 ## 4. First Attempt Method: Context Management
